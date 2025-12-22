@@ -22,8 +22,16 @@
   },
   "homepage": "https://github.com/Inside-the-Blocks/Nata#readme",
   "devDependencies": {
+    "@types/csv-parse": "^1.1.12",
     "@types/node": "^25.0.3",
+    "nodemon": "^3.1.11",
+    "rss-parser": "^3.13.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "csv-parse": "^6.1.0",
+    "dotenv": "^17.2.3",
+    "mongoose": "^9.0.2"
   }
 }
