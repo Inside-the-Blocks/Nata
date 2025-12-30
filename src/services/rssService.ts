@@ -1,6 +1,6 @@
 import Parser from 'rss-parser';
-import { FeedItem } from '../models/Feed';
-import { FeedSource } from '../csvLoader';
+import {FeedItem} from '../models/Feed';
+import type {FeedSource} from '../csvLoader';
 
 const parser = new Parser();
 

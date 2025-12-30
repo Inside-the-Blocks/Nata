@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import {parse} from 'csv-parse';
 
-export interface FeedSource {
+export interface FeedSource
+{
     uuid: string;
     website_name: string;
     address: string;      // RSS URL
@@ -13,7 +14,6 @@ export async function loadFeedsFromCSV(csvPath: string): Promise<FeedSource[]>
 {
     return new Promise((resolve, reject) => {
         const records: FeedSource[] = [];
-
         const fullPath = path.resolve(csvPath);
 
         fs.createReadStream(fullPath)
