@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/coindesk-rss-items.schema.json",
+  "title": "CoinDesk RSS Items - Simplified Record Schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["title", "url", "published_at", "summary"],
+    "properties": {
+      "title": {
+        "type": "string",
+        "description": "Article headline."
+      },
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Canonical article URL (from <link>)."
+      },
+      "published_at": {
+        "type": "string",
+        "description": "Original RSS pubDate string (often RFC-822). Keep raw."
+      },
+      "published_at_iso": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Optional ISO 8601 timestamp parsed from published_at."
+      },
+      "summary": {
+        "type": "string",
+        "description": "Short teaser (from <description>). May contain HTML."
+      },
+      "author": {
+        "type": "string",
+        "description": "Author/byline if present (often dc:creator)."
+      },
+      "categories": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "All <category> values."
+      },
+      "image_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Primary image URL if present (often media:content/@url)."
+      },
+      "id": {
+        "type": "string",
+        "description": "Stable identifier if present (guid)."
+      }
+    }
+  }
+}
