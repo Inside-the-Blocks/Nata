@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/coindesk-arc-rss.schema.json",
+  "title": "CoinDesk Arc Outbound RSS - Normalized Feed Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "feed", "channel", "items"],
+  "properties": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "publisher", "format"],
+      "properties": {
+        "provider": { "type": "string", "const": "arc-xp-outbound-feeds" },
+        "publisher": { "type": "string", "const": "coindesk" },
+        "format": { "type": "string", "const": "rss2" },
+        "notes": { "type": "string" }
+      }
+    },
+    "feed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "The RSS feed URL fetched (recommended: https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml)."
+        },
+        "fetched_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp for when this JSON was produced."
+        },
+        "http": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": { "type": "integer", "minimum": 100, "maximum": 599 },
+            "etag": { "type": "string" },
+            "last_modified": { "type": "string" },
+            "retry_after": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Seconds to wait when HTTP 429 is returned (if provided)."
+            }
+          }
+        },
+        "rss": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "version": { "type": "string", "const": "2.0" },
+            "namespaces": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "description": "Namespace prefix to URI map seen in the XML (e.g. atom, content, dc, media, sy)."
+            }
+          }
+        }
+      }
+    },
+    "channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "link", "description"],
+      "properties": {
+        "title": { "type": "string" },
+        "link": { "type": "string", "format": "uri" },
+        "description": { "type": "string" },
+
+        "language": {
+          "type": "string",
+          "description": "Often en-US for CoinDesk, but treat as publisher-provided."
+        },
+        "last_build_date": {
+          "type": "string",
+          "description": "Original RSS lastBuildDate value (often RFC-822). Keep raw."
+        },
+        "ttl_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "RSS channel ttl in minutes (advisory)."
+        },
+        "generator": { "type": "string" },
+
+        "syndication": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "update_period": {
+              "type": "string",
+              "description": "sy:updatePeriod (e.g. hourly, daily)."
+            },
+            "update_frequency": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "sy:updateFrequency (e.g. 12)."
+            }
+          }
+        },
+
+        "atom_self": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "href": { "type": "string", "format": "uri" },
+            "rel": { "type": "string", "const": "self" },
+            "type": { "type": "string" }
+          }
+        },
+
+        "image": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "url": { "type": "string", "format": "uri" },
+            "title": { "type": "string" },
+            "link": { "type": "string", "format": "uri" }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/$defs/item" }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "link", "pub_date", "summary"],
+      "properties": {
+        "title": { "type": "string" },
+        "link": { "type": "string", "format": "uri" },
+
+        "pub_date": {
+          "type": "string",
+          "description": "Original RSS pubDate value (often RFC-822). Keep raw and optionally store parsed ISO separately."
+        },
+        "pub_date_iso": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Optional ISO 8601 parsed version of pubDate (UTC recommended)."
+        },
+
+        "guid": {
+          "type": "string",
+          "description": "RSS guid if present. May be a URL or internal identifier."
+        },
+        "guid_is_permalink": {
+          "type": "boolean",
+          "description": "If your parser can infer guid/@isPermaLink."
+        },
+
+        "summary": {
+          "type": "string",
+          "description": "From <description>. Usually short teaser; may contain HTML."
+        },
+        "content_html": {
+          "type": "string",
+          "description": "From <content:encoded> if present; full HTML body."
+        },
+
+        "author": {
+          "type": "string",
+          "description": "From <dc:creator> or equivalent if present."
+        },
+
+        "categories": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "All <category> values in order."
+        },
+
+        "media": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": { "$ref": "#/$defs/mediaObject" },
+            "thumbnails": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/mediaObject" }
+            }
+          }
+        },
+
+        "raw": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Optional: a dump of raw parser fields you keep for debugging."
+        }
+      }
+    },
+    "mediaObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "type": {
+          "type": "string",
+          "description": "MIME type if provided (e.g., image/jpeg)."
+        },
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 },
+        "medium": { "type": "string" },
+        "credit": { "type": "string" },
+        "caption": { "type": "string" }
+      }
+    }
+  }
+}
